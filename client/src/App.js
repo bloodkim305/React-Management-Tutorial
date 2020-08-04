@@ -19,36 +19,26 @@ const styles = (theme) => ({
 	},
 });
 
-const customers = [
-	{
-		id: 1,
-		image: "https://placeimg.com/64/64/any",
-		name: "gmk",
-		birthday: 830520,
-		gender: "male",
-		job: "baksu",
-	},
-	{
-		id: 2,
-		image: "https://placeimg.com/64/64/1",
-		name: "tk",
-		birthday: 830000,
-		gender: "male",
-		job: "baksu",
-	},
-	{
-		id: 3,
-		image: "https://placeimg.com/64/64/2",
-		name: "sb",
-		birthday: 840120,
-		gender: "male",
-		job: "Golfer",
-	},
-];
-
 class App extends React.Component {
+	state = {
+		customers: "",
+	};
+
+	componentDidMount() {
+		this.callApi()
+			.then((res) => this.setState({ customers: res }))
+			.catch((error) => console.log(error));
+	}
+
+	callApi = async () => {
+		const response = await fetch("/api/customers");
+		const body = await response.json();
+		return body;
+	};
+
 	render() {
 		const { classes } = this.props;
+		const { customers } = this.state;
 		return (
 			<Paper className={classes.root}>
 				<Table className={classes.table}>
@@ -63,19 +53,21 @@ class App extends React.Component {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{customers.map((customer) => {
-							return (
-								<Customer
-									key={customer.id}
-									id={customer.id}
-									image={customer.image}
-									name={customer.name}
-									birthday={customer.birthday}
-									gender={customer.gender}
-									job={customer.job}
-								/>
-							);
-						})}
+						{customers
+							? customers.map((customer) => {
+									return (
+										<Customer
+											key={customer.id}
+											id={customer.id}
+											image={customer.image}
+											name={customer.name}
+											birthday={customer.birthday}
+											gender={customer.gender}
+											job={customer.job}
+										/>
+									);
+							  })
+							: "Loading..."}
 					</TableBody>
 				</Table>
 			</Paper>
